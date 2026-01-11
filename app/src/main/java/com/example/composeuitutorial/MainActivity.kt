@@ -49,56 +49,22 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            var isFavorite by rememberSaveable { // 상태를 컴포저블에서 위로 올려서 재사용 가능하도록 구성.
-                mutableStateOf(false)
-            }
-            ImageCard(
-                modifier = Modifier // 재사용을 위해 modifier을 위에서 전달
-                    .fillMaxWidth(0.5f)
-                    .padding (16.dp),
-                isFavorite = isFavorite
-            ) /*콜백 함수*/ { favorite ->
-                isFavorite = favorite
-            }
-        }
-    }
-}
-
-@Composable
-fun ImageCard(
-    modifier: Modifier = Modifier, // 외부 수정자 사용(없을 경우 기본값으로 Modifier 적용)
-    isFavorite: Boolean,
-    onTabFavorite: (Boolean) -> Unit
-) {
-    Card(
-        modifier = modifier,
-        shape = RoundedCornerShape(8.dp),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 5.dp
-        )
-    ) {
-        Box(
-            modifier = Modifier
-                .height(200.dp)
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.img),
-                contentDescription = "비긴어게인 포스터",
-                contentScale = ContentScale.Crop
-            )
-            Box( // 포스터 위를 덮은 하트가 있는 박스
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.TopEnd,
+            LazyColumn(
+                modifier = Modifier
+                    .background(color = Color.Green)
+                    .fillMaxWidth(),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                IconButton(onClick = {
-//                  isFavorite = !isFavorite // 위에 있는 상태는 컴포저블에서 변경 불가능
-                    onTabFavorite(!isFavorite)
-                }) {
-                    Icon(
-                        imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                        contentDescription = "favofite",
-                        tint = Color.White
-                    )
+                item {
+                    Text("Header")
+                }
+                // LazyColumn에서는 반복문으로 컴포저블 객체 생성 불가능
+                items(50) {index ->
+                    Text("글씨 $index")
+                }
+                item {
+                    Text("Footer")
                 }
             }
         }
