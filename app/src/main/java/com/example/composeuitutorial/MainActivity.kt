@@ -29,19 +29,30 @@ class MainActivity : ComponentActivity() {
             ComposeUiTutorialTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(color = MaterialTheme.colorScheme.background) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(color = Color.Blue)
-                            .padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text("Hello")
-                        Text("World")
-                    }
+                    Greeting("Android")
                 }
             }
         }
+    }
+}
+
+@Composable
+fun Greeting(name: String) { // Composable 어노테이션이 붙은 메소드는 대문자로 시작
+    Text(text = "Hello $name!")
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DefaultPreview() {
+    ComposeUiTutorialTheme {
+        Greeting("실시간")
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DefaultPreview2() {
+    ComposeUiTutorialTheme {
+        Greeting("실시간2")
     }
 }
