@@ -6,10 +6,13 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
@@ -26,33 +29,23 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            ComposeUiTutorialTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(color = MaterialTheme.colorScheme.background) {
-                    Greeting("Android")
+            Box(
+              modifier = Modifier
+                  .background(color = Color.Green)
+                  .fillMaxWidth()
+                  .height(200.dp)
+                  .padding(32.dp)
+            ) {
+                Text("Hello")
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    contentAlignment = Alignment.BottomEnd
+                ) {
+                    Text("everyone~!!!!!")
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String) { // Composable 어노테이션이 붙은 메소드는 대문자로 시작
-    Text(text = "Hello $name!")
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview() {
-    ComposeUiTutorialTheme {
-        Greeting("실시간")
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DefaultPreview2() {
-    ComposeUiTutorialTheme {
-        Greeting("실시간2")
     }
 }
