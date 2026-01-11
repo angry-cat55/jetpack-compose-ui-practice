@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -29,21 +31,17 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            Box(
-              modifier = Modifier
-                  .background(color = Color.Green)
-                  .fillMaxWidth()
-                  .height(200.dp)
-                  .padding(32.dp)
+            val scrollState = rememberScrollState()
+            // 스크롤 정보 기억 객체로 Column에서 스크롤 기능 사용 가능
+            // 그러나, 스크롤을 위한 Lazy~ 객체가 있음
+            Column(
+                modifier = Modifier
+                    .background(color = Color.Green)
+                    .fillMaxWidth()
+                    .verticalScroll(scrollState)
             ) {
-                Text("Hello")
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp),
-                    contentAlignment = Alignment.BottomEnd
-                ) {
-                    Text("everyone~!!!!!")
+                for (i in 1 .. 100) {
+                    Text("리스트 ${i}번 째")
                 }
             }
         }
