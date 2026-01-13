@@ -46,56 +46,105 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.composeuitutorial.ui.theme.ComposeUiTutorialTheme
 import kotlinx.coroutines.launch
 
-
-/*Todo*/
-// 1. 다 하고 커밋하고 강의 코드대로 친 후 버전 차이 물어보기
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val (text, setValue) = remember { // mutableStateOf를 구조 분해
-                // text => value값, setValue => 전달받은 String 값으로 value값 변경
-                mutableStateOf("")
-            }
-            // SnackBar 혹은 FloatingAction 버튼 등은 Scaffold를 사용해야 함.
-            val snackbarHostState = remember {
-                SnackbarHostState()
-            }
-            val scope = rememberCoroutineScope()
-            val keyboardController = LocalSoftwareKeyboardController.current
-            Scaffold(
-                snackbarHost = {
-                    SnackbarHost(snackbarHostState)
+            val navController = rememberNavController()
+            NavHost(
+                navController = navController,
+                startDestination = "first"
+            ) {
+                composable("first") {
+                    FirstScreen(navController)
                 }
-            ) {paddingValues ->
-                Column (
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    TextField(
-                        value = text,
-                        onValueChange = setValue // TextField의 값이 변경되면 setValue라는 함수 호출
+                composable("second") {
+                    SecondScreen(navController)
+                }
+                composable("third/{value}") { backStackEntry ->
+                    ThirdScreen(
+                        navController = navController,
+                        value = backStackEntry.arguments?.getString("value") ?: ""
                     )
-                    Button(onClick = {
-                        keyboardController?.hide() // null이 아닐 때만 호출하는 '안전 호출' 키워드
-                        scope.launch {
-                            snackbarHostState.showSnackbar("Hello $text")
-                        }
-                    }) {
-                        Text("Click!")
-                    }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun FirstScreen(navController: NavController) {
+    val (value, setValue) = remember {
+        mutableStateOf("")
+    }
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = "첫 화면")
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(onClick = {
+            navController.navigate(route = "second")
+        }) {
+            Text(text = "두 번째")
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        TextField(value = value, onValueChange = setValue)
+        Button(onClick = {
+            if (value.isNotEmpty()) {
+                navController.navigate("third/${value}")
+            }
+        }) {
+            Text(text = "세 번째")
+        }
+    }
+}
+
+@Composable
+fun SecondScreen(navController: NavController) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = "두 번째 화면")
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(onClick = {
+            navController.navigateUp()
+            // 혹은 .popBackStack()
+        }) {
+            Text(text = "뒤로 가기")
+        }
+    }
+}
+
+@Composable
+fun ThirdScreen(navController: NavController, value: String) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = "세 번째 화면")
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(text = value)
+        Button(onClick = {
+            navController.popBackStack()
+        }) {
+            Text(text = "뒤로 가기")
         }
     }
 }
