@@ -38,8 +38,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.State
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -54,6 +56,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -67,32 +71,59 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val viewModel = viewModel<MainViewModel>()
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = viewModel.data.value,
-                    fontSize = 30.sp
-                )
-                Button(onClick = {
-                    viewModel.changeValue();
-                }) {
-                    Text(text = "Change")
-                }
-            }
+            HomeScreen()
         }
+    }
+}
+/**********************************************
+* 각 객체의 타입(객체: 타입)이 어떤지 확인하는 커밋 *
+***********************************************/
+
+@Composable
+fun HomeScreen(viewModel: MainViewModel = viewModel()) {
+    var text1: MutableState<String> = remember {
+        mutableStateOf("Hello World")
+    }
+    val (text2: String, setText: (String) -> Unit) = remember {
+        mutableStateOf("Hello World")
+    }
+    var text3:String by remember {
+        mutableStateOf("Hello World")
+    }
+
+    // 라이브 데이터라는 기법 사용할 때 활용 가능한 코드
+    val text4: State<String?> = viewModel.liveData.observeAsState("Hello World")
+
+    Column() {
+        Text("Hello World")
+        Button(onClick = {
+            text1.value = "변경"
+            print(text1.value)
+//            text2.value = "변경" // 에러
+//            print(text2.value) // 에러
+            setText("변경")
+            print(text2)
+            text3 = "변경"
+            print(text3)
+
+//            viewModel.value.value = "변경" // 에러
+            viewModel.changeValue("변경")
+            print(viewModel.value.value)
+        }) {
+            Text("클릭")
+        }
+        TextField(value = text2, onValueChange = setText)
     }
 }
 
 class MainViewModel: ViewModel() {
-    private val _data = mutableStateOf("Hello") // 외부 접근 제한
-    val data: State<String> = _data
-    // 읽기 전용 변수 선언
-    // 상태를 담는 컨데이너인 State에 String 형테의 데이터만 담는다.
-    fun changeValue() { // 데이터 변경 전용 메소드 구현
-        _data.value = "World"
+    private val _value: MutableState<String> = mutableStateOf("Hello World")
+    val value: State<String> = _value // 업캐스팅(MutableState -> State)
+
+    private val _liveData = MutableLiveData<String>()
+    val liveData: LiveData<String> = _liveData
+
+    fun changeValue(newValue: String) {
+        _value.value = newValue;
     }
 }
